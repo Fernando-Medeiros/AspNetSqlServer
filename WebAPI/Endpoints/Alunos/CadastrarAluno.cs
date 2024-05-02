@@ -1,6 +1,4 @@
-﻿using WebAPI.Endpoints.Alunos.Data;
-
-namespace WebAPI.Endpoints.Alunos;
+﻿namespace WebAPI.Endpoints.Alunos;
 
 public static class CadastrarAluno
 {
@@ -11,32 +9,23 @@ public static class CadastrarAluno
             DatabaseContext context,
             CancellationToken cancellationToken) =>
         {
-            var universidade = await context.Universidades
-                .AsNoTracking()
-                .Where(x => x.Id == request.UniversidadeId)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (universidade == null)
-                return Results.NotFound("Universidade não encontrada");
-
-            var curso = await context.Cursos
+            bool hasCurso = await context.Cursos
                 .AsNoTracking()
                 .Where(x => x.Id == request.CursoId)
                 .Where(x => x.UniversidadeId == request.UniversidadeId)
+                .Select(x => x is Curso)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (curso == null)
+            if (hasCurso is false)
                 return Results.NotFound("Curso não encontrado");
 
-            Aluno aluno = new()
+            context.Alunos.Add(new()
             {
                 Id = new Guid(),
-                Nome = request.Nome!,
-                CursoId = curso.Id,
-                UniversidadeId = universidade.Id,
-            };
-
-            context.Alunos.Add(aluno);
+                Nome = request.Nome,
+                CursoId = request.CursoId,
+                UniversidadeId = request.UniversidadeId,
+            });
 
             await context.SaveChangesAsync(cancellationToken);
 

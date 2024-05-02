@@ -4,32 +4,38 @@ public static class RecuperarUniversidade
 {
     public static void Map(IEndpointRouteBuilder route)
     {
-        route.MapGet("{id:guid}", async (
-            Guid? id,
-            DatabaseContext context) =>
+        route.MapGet("{universidadeId:guid}", async (
+            Guid universidadeId,
+            DatabaseContext context,
+            CancellationToken cancellationToken) =>
         {
-            var universidade = await context.Universidades
+            UniversidadeCursosResponse? universidade = await context.Universidades
                 .AsNoTracking()
-                .Where(x => x.Id == id)
-                .FirstOrDefaultAsync();
+                .Where(x => x.Id == universidadeId)
+                .Select(x => new UniversidadeCursosResponse(
+                    new Identificador(x.Id, x.Nome),
+                    x.Cursos.Select(x => new Identificador(x.Id, x.Nome))
+                    ))
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if (universidade == null)
-                return Results.NotFound("Universidade não encontrado");
+            return universidade is UniversidadeCursosResponse
+                ? Results.Ok(universidade)
+                : Results.NotFound("Universidade não encontrado");
 
-            return Results.Ok(universidade);
-
-        }).Produces(200, typeof(Universidade));
+        }).Produces(200, typeof(UniversidadeCursosResponse));
 
 
         route.MapGet("", async (
-          DatabaseContext context) =>
+          DatabaseContext context,
+          CancellationToken cancellationToken) =>
         {
             var universidades = await context.Universidades
                 .AsNoTracking()
-                .ToListAsync();
+                .Select(x => new Identificador(x.Id, x.Nome))
+                .ToListAsync(cancellationToken);
 
             return Results.Ok(universidades);
 
-        }).Produces(200, typeof(List<Universidade>));
+        }).Produces(200, typeof(IEnumerable<Identificador>));
     }
 }

@@ -18,8 +18,8 @@ public static class CadastrarCursoDisciplina
                 return Results.NotFound("Disciplina não encontrada");
 
             var curso = await context.Cursos
-                .Where(x => x.Id == cursoId)
                 .Include(x => x.Disciplinas)
+                .Where(x => x.Id == cursoId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (curso == null)

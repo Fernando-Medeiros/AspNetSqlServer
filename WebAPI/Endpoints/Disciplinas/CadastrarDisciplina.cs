@@ -1,35 +1,33 @@
-﻿namespace WebAPI.Endpoints.Universidades;
+﻿namespace WebAPI.Endpoints.Disciplinas;
 
-public static class CadastrarUniversidade
+public static class CadastrarDisciplina
 {
     public static void Map(IEndpointRouteBuilder route)
     {
         route.MapPost("", async (
-            [FromBody] UniversidadeRequest request,
+            [FromBody] DisciplinaRequest request,
             DatabaseContext context,
             CancellationToken cancellationToken) =>
         {
-            var universidadeName = await context.Universidades
-                .AsNoTracking()
+            var disciplinaNome = await context.Disciplinas
                 .Where(x => x.Nome == request.Nome)
                 .Select(x => x.Nome)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (universidadeName == request.Nome)
-                return Results.BadRequest($"A Universidade {request.Nome} já está cadastrada!");
+            if (disciplinaNome == request.Nome)
+                return Results.BadRequest($"A disciplina {request.Nome} já està cadastrada!");
 
-            Universidade universidade = new()
+            Disciplina disciplina = new()
             {
                 Id = new Guid(),
-                Nome = request.Nome,
+                Nome = request.Nome!,
             };
 
-            context.Universidades.Add(universidade);
+            context.Disciplinas.Add(disciplina);
 
             await context.SaveChangesAsync(cancellationToken);
 
             return Results.Created();
-
         }).Produces(201);
     }
 }

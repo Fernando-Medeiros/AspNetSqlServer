@@ -9,7 +9,7 @@ internal static class RotasDisciplinas
             .WithTags("Disciplina")
             .WithOpenApi();
 
-        RecuperarDisciplinas.Map(route);
-        CadastrarDisciplinas.Map(route);
+        RecuperarDisciplina.Map(route);
+        CadastrarDisciplina.Map(route);
     }
 }

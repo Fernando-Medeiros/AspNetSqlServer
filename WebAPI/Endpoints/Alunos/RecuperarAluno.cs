@@ -1,6 +1,4 @@
-﻿using WebAPI.Endpoints.Alunos.Data;
-
-namespace WebAPI.Endpoints.Alunos;
+﻿namespace WebAPI.Endpoints.Alunos;
 
 public static class RecuperarAluno
 {

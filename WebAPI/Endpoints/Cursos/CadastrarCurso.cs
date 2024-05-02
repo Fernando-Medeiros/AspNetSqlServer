@@ -11,8 +11,8 @@ public static class CadastrarCurso
         {
             var universidade = await context.Universidades
                 .AsNoTracking()
-                .Where(x => x.Id == request.UniversidadeId)
                 .Include(x => x.Cursos)
+                .Where(x => x.Id == request.UniversidadeId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (universidade == null)
@@ -22,14 +22,12 @@ public static class CadastrarCurso
                 return Results.NotFound(
                     $"Curso {request.Nome} já está cadastro na Universidade {universidade.Nome}");
 
-            Curso curso = new()
+            universidade.Cursos.Add(new()
             {
                 Id = new Guid(),
                 Nome = request.Nome,
                 UniversidadeId = request.UniversidadeId,
-            };
-
-            context.Cursos.Add(curso);
+            });
 
             await context.SaveChangesAsync(cancellationToken);
 

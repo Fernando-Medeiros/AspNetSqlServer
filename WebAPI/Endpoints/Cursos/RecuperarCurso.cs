@@ -9,23 +9,19 @@ public static class RecuperarCurso
             DatabaseContext context,
             CancellationToken cancellationToken) =>
         {
-            var curso = await context.Cursos
+            CursoDisciplinasResponse? curso = await context.Cursos
                 .AsNoTracking()
                 .Where(x => x.Id == cursoId)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Nome,
-                    x.Disciplinas.Count,
-                    Disciplinas = x.Disciplinas.Select(x => new { x.Id, x.Nome })
-                })
+                .Select(x => new CursoDisciplinasResponse(
+                    new Identificador(x.Id, x.Nome),
+                    x.Disciplinas.Select(x => new Identificador(x.Id, x.Nome))))
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return curso == null
-                ? Results.NotFound("Curso não encontrado")
-                : Results.Ok(curso);
+            return curso is CursoDisciplinasResponse
+                ? Results.Ok(curso)
+                : Results.NotFound("Curso não encontrado");
 
-        }).Produces(200, typeof(object));
+        }).Produces(200, typeof(CursoDisciplinasResponse));
 
 
         route.MapGet("", async (
@@ -34,10 +30,11 @@ public static class RecuperarCurso
         {
             var cursos = await context.Cursos
                 .AsNoTracking()
+                .Select(x => new Identificador(x.Id, x.Nome))
                 .ToListAsync(cancellationToken);
 
             return Results.Ok(cursos);
 
-        }).Produces(200, typeof(IEnumerable<Curso>));
+        }).Produces(200, typeof(IEnumerable<Identificador>));
     }
 }
