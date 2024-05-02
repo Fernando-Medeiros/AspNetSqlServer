@@ -1,29 +1,27 @@
 ﻿namespace WebAPI.Endpoints.Alunos;
 
-public static class AtualizarCadastroAluno
+public static class AtualizarAluno
 {
     public static void Map(IEndpointRouteBuilder route)
     {
-        route.MapPatch("atualizar-cadastro/{id:guid}", async (
-          Guid? id,
+        route.MapPatch("{alunoId:guid}", async (
+          Guid alunoId,
           [FromBody] string Nome,
-          DatabaseContext context) =>
+          DatabaseContext context,
+          CancellationToken cancellationToken) =>
         {
             var aluno = await context.Alunos
-                .AsNoTracking()
-                .Where(x => x.Id == id)
-                .FirstOrDefaultAsync();
+                .Where(x => x.Id == alunoId)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (aluno == null)
                 return Results.NotFound("Aluno não encontrado");
 
             aluno.Nome = Nome;
 
-            context.Alunos.Entry(aluno).State = EntityState.Modified;
-
             context.Alunos.Update(aluno);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return Results.NoContent();
         }).Produces(204);

@@ -11,7 +11,7 @@ internal static class RotasAlunos
 
         RecuperarAluno.Map(route);
         CadastrarAluno.Map(route);
-        CancelarCadastroAluno.Map(route);
-        AtualizarCadastroAluno.Map(route);
+        AtualizarAluno.Map(route);
+        RemoverAluno.Map(route);
     }
 }

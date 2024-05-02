@@ -1,25 +1,24 @@
 ﻿namespace WebAPI.Endpoints.Alunos;
 
-public static class CancelarCadastroAluno
+public static class RemoverAluno
 {
     public static void Map(IEndpointRouteBuilder route)
     {
-        route.MapDelete("cancelar-cadastro/{id:guid}", async (
-           Guid? id,
-           DatabaseContext context
-           ) =>
+        route.MapDelete("{alunoId:guid}", async (
+           Guid alunoId,
+           DatabaseContext context,
+           CancellationToken cancellationToken) =>
         {
             var aluno = await context.Alunos
-                 .AsNoTracking()
-                 .Where(x => x.Id == id)
-                 .FirstOrDefaultAsync();
+                .Where(x => x.Id == alunoId)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (aluno == null)
                 return Results.NotFound("Aluno não encontrado");
 
             context.Alunos.Remove(aluno);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return Results.NoContent();
         }).Produces(204);

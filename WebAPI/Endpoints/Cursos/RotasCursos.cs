@@ -9,7 +9,8 @@ internal static class RotasCursos
             .WithTags("Cursos")
             .WithOpenApi();
 
-        RecuperarCursos.Map(route);
-        CadastrarCursos.Map(route);
+        RecuperarCurso.Map(route);
+        CadastrarCurso.Map(route);
+        CadastrarCursoDisciplina.Map(route);
     }
 }

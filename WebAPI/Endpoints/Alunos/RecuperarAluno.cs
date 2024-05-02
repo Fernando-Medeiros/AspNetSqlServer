@@ -1,30 +1,31 @@
-﻿namespace WebAPI.Endpoints.Alunos;
+﻿using WebAPI.Endpoints.Alunos.Data;
+
+namespace WebAPI.Endpoints.Alunos;
 
 public static class RecuperarAluno
 {
     public static void Map(IEndpointRouteBuilder route)
     {
-        route.MapGet("{id:guid}", async (
-            Guid? id,
-            DatabaseContext context) =>
+        route.MapGet("{alunoId:guid}", async (
+            Guid? alunoId,
+            DatabaseContext context,
+            CancellationToken cancellationToken) =>
         {
-            var aluno = await context.Alunos
+            AlunoResponse? aluno = await context
+                .Alunos
                 .AsNoTracking()
-                .Where(x => x.Id == id)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Nome,
-                    Curso = new { x.Curso.Id, x.Curso.Nome },
-                    Universidade = new { x.Curso.Universidade.Id, x.Curso.Universidade.Nome }
-                })
-                .FirstOrDefaultAsync();
+                .Where(x => x.Id == alunoId)
+                .Select(x => new AlunoResponse(
+                    new Identificador(x.Id, x.Nome),
+                    new Identificador(x.CursoId, x.Curso.Nome),
+                    new Identificador(x.UniversidadeId, x.Universidade.Nome),
+                    x.Curso.Disciplinas.Select(x => new Identificador(x.Id, x.Nome))))
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if (aluno == null)
-                return Results.NotFound("Aluno não encontrado");
+            return aluno is AlunoResponse
+                ? Results.Ok(aluno)
+                : Results.NotFound("Aluno não encontrado");
 
-            return Results.Ok(aluno);
-
-        }).Produces(200, typeof(Aluno));
+        }).Produces(200, typeof(AlunoResponse));
     }
 }
