@@ -11,6 +11,13 @@ public static class RecuperarAluno
             var aluno = await context.Alunos
                 .AsNoTracking()
                 .Where(x => x.Id == id)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Nome,
+                    Curso = new { x.Curso.Id, x.Curso.Nome },
+                    Universidade = new { x.Curso.Universidade.Id, x.Curso.Universidade.Nome }
+                })
                 .FirstOrDefaultAsync();
 
             if (aluno == null)
