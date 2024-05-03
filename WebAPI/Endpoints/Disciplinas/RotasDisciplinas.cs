@@ -11,5 +11,6 @@ internal static class RotasDisciplinas
 
         RecuperarDisciplina.Map(route);
         CadastrarDisciplina.Map(route);
+        CadastrarDisciplinaInstrutor.Map(route);
     }
 }

@@ -9,6 +9,8 @@ global using WebAPI.Endpoints.Cursos;
 global using WebAPI.Endpoints.Cursos.Data;
 global using WebAPI.Endpoints.Disciplinas;
 global using WebAPI.Endpoints.Disciplinas.Data;
+global using WebAPI.Endpoints.Instrutores;
+global using WebAPI.Endpoints.Instrutores.Data;
 global using WebAPI.Endpoints.Universidades;
 global using WebAPI.Endpoints.Universidades.Data;
 global using WebAPI.Shared;

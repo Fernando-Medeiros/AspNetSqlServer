@@ -38,6 +38,7 @@ public sealed class Startup
         {
             RotasAlunos.MapGroup(routeBuilder);
             RotasCursos.MapGroup(routeBuilder);
+            RotasInstrutores.MapGroup(routeBuilder);
             RotasDisciplinas.MapGroup(routeBuilder);
             RotasUniversidades.MapGroup(routeBuilder);
         });
